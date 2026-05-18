@@ -1,0 +1,277 @@
+<app-navbar></app-navbar>
+
+<div class="toast-container" *ngIf="toast">
+  <div class="toast" [ngClass]="'toast-' + toastType">{{ toast }}</div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Page Header -->
+  <div class="el-page-header">
+    <div class="el-title-block">
+      <h1 class="el-title">
+        <lucide-icon [name]="registeredMode ? 'circle-check' : pastMode ? 'history' : 'calendar-days'" [size]="26"></lucide-icon>
+        {{ pageTitle }}
+      </h1>
+      <p class="el-subtitle">{{ pageSubtitle }}</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+
+      <!-- Attendee mode-switcher buttons -->
+      <ng-container *ngIf="auth.isAttendee()">
+        <a routerLink="/events" class="btn btn-secondary" *ngIf="pastMode || registeredMode">
+          <lucide-icon name="calendar-days" [size]="15"></lucide-icon>
+          All Events
+        </a>
+        <a [routerLink]="['/events']" [queryParams]="{registered: 'true'}" class="btn btn-secondary"
+           *ngIf="!registeredMode">
+          <lucide-icon name="circle-check" [size]="15"></lucide-icon>
+          Registered
+        </a>
+        <a [routerLink]="['/events']" [queryParams]="{past: 'true'}" class="btn btn-secondary"
+           *ngIf="!pastMode">
+          <lucide-icon name="history" [size]="15"></lucide-icon>
+          Past Events
+        </a>
+      </ng-container>
+
+      <!-- Organizer mode-switcher -->
+      <ng-container *ngIf="auth.isOrganizer()">
+        <a routerLink="/events" class="btn btn-secondary" *ngIf="pastMode || allEventsMode">
+          <lucide-icon name="calendar-days" [size]="15"></lucide-icon>
+          My Events
+        </a>
+        <a [routerLink]="['/events']" [queryParams]="{view: 'all'}" class="btn btn-secondary"
+           *ngIf="!allEventsMode">
+          <lucide-icon name="layout-grid" [size]="15"></lucide-icon>
+          All Events
+        </a>
+        <a [routerLink]="['/events']" [queryParams]="{past: 'true'}" class="btn btn-secondary"
+           *ngIf="!pastMode">
+          <lucide-icon name="history" [size]="15"></lucide-icon>
+          Completed
+        </a>
+        <a routerLink="/events/create" class="btn btn-primary" *ngIf="!pastMode">
+          <lucide-icon name="circle-plus" [size]="16"></lucide-icon>
+          Create Event
+        </a>
+      </ng-container>
+
+      <!-- Admin buttons -->
+      <ng-container *ngIf="auth.isAdmin()">
+        <a routerLink="/events" class="btn btn-secondary" *ngIf="pastMode">
+          <lucide-icon name="calendar-days" [size]="15"></lucide-icon>
+          Upcoming
+        </a>
+        <a [routerLink]="['/events']" [queryParams]="{past: 'true'}" class="btn btn-secondary"
+           *ngIf="!pastMode">
+          <lucide-icon name="history" [size]="15"></lucide-icon>
+          Past Events
+        </a>
+        <a routerLink="/events/create" class="btn btn-primary" *ngIf="!pastMode">
+          <lucide-icon name="circle-plus" [size]="16"></lucide-icon>
+          Create Event
+        </a>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="el-filter-card">
+    <div class="el-filter-grid">
+      <div class="el-filter-field">
+        <lucide-icon name="search" [size]="15" class="el-field-icon"></lucide-icon>
+        <input type="text" [(ngModel)]="search" (input)="applyFilter()"
+               placeholder="Search events…" class="el-filter-input">
+      </div>
+      <div class="el-filter-field">
+        <lucide-icon name="tag" [size]="15" class="el-field-icon"></lucide-icon>
+        <select [(ngModel)]="category" (ngModelChange)="applyFilter()" class="el-filter-input">
+          <option value="">All Categories</option>
+          <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+      <div class="el-filter-field">
+        <lucide-icon name="map-pin" [size]="15" class="el-field-icon"></lucide-icon>
+        <input type="text" [(ngModel)]="location" (input)="applyFilter()"
+               placeholder="Location…" class="el-filter-input">
+      </div>
+      <button (click)="clearFilter()" class="el-clear-btn">
+        <lucide-icon name="x" [size]="15"></lucide-icon>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- Visual Category Filter Strip -->
+  <div class="el-cat-strip">
+    <button class="el-cat-all" [class.active]="category === ''"
+            (click)="category = ''; applyFilter()">
+      <lucide-icon name="layout-grid" [size]="13"></lucide-icon>
+      All
+    </button>
+    <button class="el-cat-tile" *ngFor="let cat of categoryData"
+            [class.active]="category === cat.value"
+            (click)="category = (category === cat.value ? '' : cat.value); applyFilter()">
+      <div class="ect-bg" [style.background-image]="'url(' + cat.image + ')'"></div>
+      <div class="ect-overlay" [style.background]="cat.accent + '22'"></div>
+      <div class="ect-body">
+        <lucide-icon [name]="cat.icon" [size]="14" [style.color]="cat.accent"></lucide-icon>
+        <span [style.color]="cat.accent">{{ cat.label }}</span>
+      </div>
+      <div class="ect-bar" [style.background]="cat.accent"></div>
+    </button>
+  </div>
+
+  <!-- Result count -->
+  <div class="el-result-bar" *ngIf="!loading">
+    <span class="el-count">
+      <strong>{{ filtered.length }}</strong> event{{ filtered.length !== 1 ? 's' : '' }}
+    </span>
+    <span class="el-showing" *ngIf="filtered.length > 0">
+      showing <strong>{{ visibleEvents.length }}</strong> of {{ filtered.length }}
+    </span>
+  </div>
+
+  <!-- Loading Skeleton -->
+  <div class="el-grid" *ngIf="loading">
+    <div class="skeleton" style="height:300px;border-radius:18px" *ngFor="let i of [1,2,3,4,5,6]"></div>
+  </div>
+
+  <!-- Events Grid (Infinite Scroll) -->
+  <div class="el-grid" *ngIf="!loading && filtered.length > 0">
+    <div class="el-card" *ngFor="let event of visibleEvents; let i = index"
+         [style.animation-delay]="(i % 6 * 60) + 'ms'">
+
+      <!-- Lazy image banner -->
+      <div class="el-card-banner"
+           [style.background-image]="'url(' + getCategoryImage(event.category) + ')'"
+           loading="lazy">
+        <div class="el-card-banner-overlay"></div>
+        <div class="el-card-accent-bar" [style.background]="getCategoryAccent(event.category)"></div>
+        <span class="el-seats-pill"
+              [class.low]="event.availableSeats > 0 && event.availableSeats < 10"
+              [class.sold]="event.availableSeats === 0">
+          {{ event.availableSeats === 0 ? 'Sold Out' : event.availableSeats + ' seats left' }}
+        </span>
+      </div>
+
+      <!-- Card body -->
+      <div class="el-card-body">
+        <div class="el-card-top">
+          <span class="el-cat-chip">
+            <lucide-icon [name]="getCategoryIcon(event.category)" [size]="11"></lucide-icon>
+            {{ getCategoryLabel(event.category) }}
+          </span>
+          <span class="el-registered-chip" *ngIf="registeredMode">
+            <lucide-icon name="circle-check" [size]="11"></lucide-icon>
+            Registered
+          </span>
+          <span class="el-past-chip" *ngIf="pastMode">
+            <lucide-icon name="check-circle-2" [size]="11"></lucide-icon>
+            Completed
+          </span>
+        </div>
+
+        <h3 class="el-card-title">{{ event.name }}</h3>
+        <p class="el-card-desc">{{ (event.description || '') | slice:0:85 }}{{ (event.description || '').length > 85 ? '…' : '' }}</p>
+
+        <div class="el-card-meta">
+          <span>
+            <lucide-icon name="map-pin" [size]="12"></lucide-icon>
+            {{ event.location }}
+          </span>
+          <span>
+            <lucide-icon name="calendar-days" [size]="12"></lucide-icon>
+            {{ event.startTime | date:'MMM d' }}<ng-container *ngIf="event.endTime"> – {{ event.endTime | date:'MMM d, y' }}</ng-container><ng-container *ngIf="!event.endTime">, {{ event.startTime | date:'y' }}</ng-container>
+          </span>
+          <span>
+            <lucide-icon name="clock" [size]="12"></lucide-icon>
+            {{ event.startTime | date:'h:mm a' }}<ng-container *ngIf="event.endTime"> – {{ event.endTime | date:'h:mm a' }}</ng-container>
+          </span>
+        </div>
+
+        <div class="el-card-footer">
+          <div class="el-price">
+            <span class="el-price-label">from</span>
+            <span class="el-price-value">₹{{ event.ticketPrice }}</span>
+          </div>
+          <div class="el-card-btns">
+            <!-- Leave Feedback — past events for attendee -->
+            <a [routerLink]="['/feedback', event.eventId]" class="btn btn-primary btn-sm"
+               *ngIf="auth.isAttendee() && pastMode">
+              <lucide-icon name="star" [size]="13"></lucide-icon>
+              Rate
+            </a>
+            <a [routerLink]="['/events', event.eventId]" class="btn btn-primary btn-sm"
+               *ngIf="!pastMode">
+              {{ (auth.isAttendee()) ? 'Book Now' : 'View' }}
+            </a>
+            <a [routerLink]="['/events', event.eventId]" class="btn btn-secondary btn-sm"
+               *ngIf="pastMode">
+              Details
+            </a>
+            <!-- Edit button — only owner or admin, only non-past -->
+            <a [routerLink]="['/events/edit', event.eventId]"
+               class="el-edit-btn"
+               *ngIf="canEditEvent(event) && !isPast(event)"
+               title="Edit event">
+              <lucide-icon name="pencil" [size]="14"></lucide-icon>
+            </a>
+            <button class="el-del-btn"
+                    *ngIf="canDeleteEvent(event)"
+                    (click)="deleteEvent(event.eventId)"
+                    title="Delete event">
+              <lucide-icon name="trash-2" [size]="14"></lucide-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Infinite Scroll Sentinel -->
+  <div #scrollSentinel class="el-sentinel" *ngIf="!loading && hasMore"></div>
+
+  <!-- Loading More Spinner -->
+  <div class="el-loading-more" *ngIf="loadingMore">
+    <div class="spinner-dark"></div>
+    <span>Loading more events…</span>
+  </div>
+
+  <!-- All loaded message -->
+  <div class="el-all-loaded" *ngIf="!loading && !hasMore && filtered.length > 0">
+    <lucide-icon name="check-circle-2" [size]="16"></lucide-icon>
+    All {{ filtered.length }} events loaded
+  </div>
+
+  <!-- Empty State -->
+  <div class="el-empty" *ngIf="!loading && filtered.length === 0">
+    <img src="/assets/images/empty-events.svg" alt="No events" class="el-empty-img" loading="lazy">
+    <h3 class="el-empty-title">
+      {{ registeredMode ? 'No registered events' : pastMode ? 'No past events' : 'No events found' }}
+    </h3>
+    <p class="el-empty-sub">
+      <ng-container *ngIf="registeredMode">
+        You haven't booked any upcoming events yet. Browse events to find something you'll love!
+      </ng-container>
+      <ng-container *ngIf="pastMode && !registeredMode">
+        No completed events found. Check back after your events have ended.
+      </ng-container>
+      <ng-container *ngIf="!pastMode && !registeredMode">
+        Try adjusting your search or category filter
+      </ng-container>
+    </p>
+    <a routerLink="/events" class="btn btn-primary" *ngIf="registeredMode">
+      <lucide-icon name="calendar-days" [size]="15"></lucide-icon>
+      Browse Events
+    </a>
+    <button (click)="clearFilter()" class="btn btn-primary" *ngIf="!registeredMode">
+      <lucide-icon name="search" [size]="15"></lucide-icon>
+      Clear Filters
+    </button>
+  </div>
+
+</div>

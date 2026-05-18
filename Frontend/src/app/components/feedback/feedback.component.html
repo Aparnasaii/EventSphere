@@ -1,0 +1,178 @@
+<app-navbar></app-navbar>
+
+<div class="toast-container" *ngIf="toast">
+  <div class="toast" [ngClass]="'toast-' + toastType">{{ toast }}</div>
+</div>
+
+<div class="page-wrapper">
+  <div class="breadcrumb">
+    <a routerLink="/events">Events</a>
+    <span>/</span>
+    <a [routerLink]="['/events', eventId]">Event Detail</a>
+    <span>/</span>
+    <span>Feedback</span>
+  </div>
+
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Event Feedback</h1>
+      <p>{{ event?.name || 'Rate your experience and help others discover great events' }}</p>
+    </div>
+  </div>
+
+  <div class="feedback-layout">
+
+    <!-- ══ Admin view: read-only oversight panel ══ -->
+    <div class="card feedback-card" *ngIf="auth.isAdmin()">
+      <h3 class="section-title">
+        <lucide-icon name="shield-check" [size]="16" class="inline-icon"></lucide-icon>
+        Admin Overview
+      </h3>
+      <div class="fb-state-block fb-admin-view">
+        <lucide-icon name="shield" [size]="34"></lucide-icon>
+        <p><strong>You are viewing as an administrator.</strong></p>
+        <p style="font-size:13px;margin-top:4px">
+          Only attendees with confirmed tickets can submit feedback.
+          You can monitor reviews and ratings in the panel on the right.
+        </p>
+        <div class="fb-admin-stats">
+          <div class="fb-admin-stat">
+            <div class="fb-admin-stat-val">
+              {{ averageRating !== null && averageRating > 0 ? (averageRating | number:'1.1-1') : '—' }}
+            </div>
+            <div class="fb-admin-stat-lbl">Avg Rating</div>
+          </div>
+          <div class="fb-admin-stat">
+            <div class="fb-admin-stat-val">{{ comments.length }}</div>
+            <div class="fb-admin-stat-lbl">Reviews</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Attendee view: Submit form / status states ══ -->
+    <div class="card feedback-card" *ngIf="auth.isAttendee()">
+      <h3 class="section-title">Your Rating</h3>
+
+      <!-- ① Still loading -->
+      <div class="fb-state-block" *ngIf="feedbackLoading">
+        <div class="spinner" style="width:28px;height:28px;border-width:3px"></div>
+        <p>Loading your feedback status…</p>
+      </div>
+
+      <!-- ② No confirmed ticket -->
+      <div class="fb-state-block" *ngIf="!feedbackLoading && auth.isAttendee() && !hasTicket">
+        <lucide-icon name="ticket" [size]="36"></lucide-icon>
+        <p>You need a <strong>confirmed ticket</strong> for this event to submit feedback.</p>
+        <a [routerLink]="['/events', eventId]" class="btn btn-primary" style="margin-top:12px">
+          View Event
+        </a>
+      </div>
+
+      <!-- ③ Has ticket but event hasn't ended yet -->
+      <div class="fb-state-block" *ngIf="!feedbackLoading && hasTicket && !eventEnded">
+        <lucide-icon name="clock" [size]="32"></lucide-icon>
+        <p>Feedback will be available <strong>after the event ends</strong>.</p>
+        <a [routerLink]="['/events', eventId]" class="btn btn-secondary" style="margin-top:10px">
+          Back to Event
+        </a>
+      </div>
+
+      <!-- ④ Event ended, has ticket, but organizer hasn't initiated feedback yet -->
+      <div class="fb-state-block fb-not-ready"
+           *ngIf="!feedbackLoading && hasTicket && eventEnded && !submitted && feedbackNotReady">
+        <lucide-icon name="hourglass" [size]="34"></lucide-icon>
+        <p><strong>Feedback form not ready yet.</strong></p>
+        <p style="font-size:13px;margin-top:4px">
+          The organizer hasn't opened the feedback cycle for this event yet.
+          Please check back in a little while.
+        </p>
+        <button class="btn btn-secondary" style="margin-top:12px" (click)="retryInitiate()">
+          <lucide-icon name="refresh-cw" [size]="14"></lucide-icon>
+          Try Again
+        </button>
+      </div>
+
+      <!-- ⑤ Thank you — already submitted -->
+      <div class="thankyou-block"
+           *ngIf="!feedbackLoading && hasTicket && eventEnded && submitted">
+        <div class="thankyou-emoji">🎉</div>
+        <h2 class="thankyou-heading">Thank You for Your Valuable Feedback!</h2>
+        <p class="thankyou-sub">
+          Your review helps others find great events. We truly appreciate you taking the time!
+        </p>
+        <div class="star-row" style="justify-content:center;margin-top:18px">
+          <span *ngFor="let s of [1,2,3,4,5]"
+                class="star-btn"
+                [class.filled]="s <= rating"
+                style="cursor:default;font-size:32px">★</span>
+          <span class="rating-label" *ngIf="rating > 0">{{ rating }}/5</span>
+        </div>
+        <blockquote class="thankyou-comment" *ngIf="comment">"{{ comment }}"</blockquote>
+        <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap;justify-content:center">
+          <a routerLink="/dashboard" class="btn btn-primary">
+            Back to Dashboard
+          </a>
+          <a routerLink="/events" class="btn btn-secondary">
+            Explore More Events
+          </a>
+        </div>
+      </div>
+
+      <!-- ⑥ Form — feedbackId is known, ready to submit -->
+      <div *ngIf="!feedbackLoading && hasTicket && eventEnded && !submitted && !feedbackNotReady && feedbackId !== null">
+        <p class="fb-hint">
+          <lucide-icon name="info" [size]="13"></lucide-icon>
+          Tap a star to rate, then click Submit.
+        </p>
+
+        <div class="star-row">
+          <button *ngFor="let s of [1,2,3,4,5]"
+                  class="star-btn"
+                  [class.filled]="s <= rating"
+                  (click)="setRating(s)"
+                  [title]="s + ' star' + (s > 1 ? 's' : '')">★</button>
+          <span class="rating-label" *ngIf="rating > 0">{{ rating }}/5</span>
+        </div>
+
+        <div class="form-group" style="margin-top:20px">
+          <label class="form-label">Comment <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+          <textarea class="form-control" rows="4" [(ngModel)]="comment"
+                    placeholder="Share your experience…"></textarea>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;margin-top:16px"
+                (click)="submit()" [disabled]="loading || rating === 0">
+          <span class="spinner" style="width:16px;height:16px;border-width:2px;margin-right:6px" *ngIf="loading"></span>
+          {{ loading ? 'Submitting…' : 'Submit Feedback' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ Stats Panel ══ -->
+    <div class="stats-panel">
+      <div class="card avg-card">
+        <div class="avg-label">Average Rating</div>
+        <div class="avg-value">
+          {{ averageRating !== null && averageRating > 0 ? (averageRating | number:'1.1-1') : '—' }}
+        </div>
+        <div class="avg-stars">
+          <span *ngFor="let s of [1,2,3,4,5]"
+                [class.filled]="s <= (averageRating || 0)">★</span>
+        </div>
+      </div>
+
+      <div class="card comments-card">
+        <h3 class="section-title">Reviews</h3>
+        <div class="no-comments" *ngIf="comments.length === 0">
+          No reviews yet. Be the first!
+        </div>
+        <div class="comment-item" *ngFor="let c of comments">
+          <div class="comment-avatar">💬</div>
+          <p>{{ c }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,103 @@
+<app-navbar></app-navbar>
+
+<div class="toast-container" *ngIf="toast">
+  <div class="toast" [ngClass]="'toast-' + toastType">{{ toast }}</div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="mt-page-header">
+    <div class="mt-title-block">
+      <h1 class="mt-title">
+        <lucide-icon name="ticket" [size]="26"></lucide-icon>
+        My Tickets
+      </h1>
+      <p class="mt-subtitle">View and manage your event bookings</p>
+    </div>
+    <span class="mt-count-badge" *ngIf="!loading">
+      {{ tickets.length }} ticket{{ tickets.length !== 1 ? 's' : '' }}
+    </span>
+  </div>
+
+  <!-- Loading -->
+  <div class="mt-skeleton-list" *ngIf="loading">
+    <div class="skeleton" style="height:110px;border-radius:16px" *ngFor="let i of [1,2,3,4]"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="mt-empty" *ngIf="!loading && tickets.length === 0">
+    <div class="mt-empty-icon">
+      <lucide-icon name="ticket" [size]="48"></lucide-icon>
+    </div>
+    <h3 class="mt-empty-title">No tickets yet</h3>
+    <p class="mt-empty-sub">Browse events and book your first experience!</p>
+    <a routerLink="/events" class="btn btn-primary">
+      <lucide-icon name="calendar-days" [size]="15"></lucide-icon>
+      Browse Events
+    </a>
+  </div>
+
+  <!-- Ticket List -->
+  <div class="mt-list" *ngIf="!loading && tickets.length > 0">
+    <div class="mt-ticket" *ngFor="let ticket of tickets; let i = index"
+         [class.cancelled]="ticket.status === 'CANCELLED' || ticket.status === 'FAILED'"
+         [style.animation-delay]="(i * 50) + 'ms'">
+
+      <!-- Left accent stripe -->
+      <div class="mt-stripe" [ngClass]="getStatusClass(ticket.status)"></div>
+
+      <!-- Ticket ID + status -->
+      <div class="mt-left">
+        <div class="mt-ticket-id">
+          <lucide-icon name="ticket" [size]="13"></lucide-icon>
+          #{{ ticket.ticketId }}
+        </div>
+        <span class="mt-status-chip" [ngClass]="getStatusClass(ticket.status)">
+          {{ ticket.status }}
+        </span>
+        <div class="mt-booked-date">
+          <lucide-icon name="calendar-days" [size]="11"></lucide-icon>
+          {{ ticket.bookingDate | date:'MMM d, y' }}
+        </div>
+      </div>
+
+      <!-- Event info -->
+      <div class="mt-center">
+        <div class="mt-event-name">{{ ticket.eventName || ('Event #' + ticket.eventId) }}</div>
+        <div class="mt-event-amount-row">
+          <span class="mt-qty-chip" *ngIf="ticket.quantity && ticket.quantity > 0">
+            <lucide-icon name="users" [size]="12"></lucide-icon>
+            {{ ticket.quantity }} {{ ticket.quantity === 1 ? 'ticket' : 'tickets' }}
+          </span>
+          <span class="mt-event-amount">₹{{ ticket.price }}</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-right">
+        <ng-container *ngIf="ticket.status !== 'CANCELLED' && ticket.status !== 'FAILED'">
+          <a [routerLink]="['/events', ticket.eventId]" class="btn btn-secondary btn-sm">View Event</a>
+          <!-- Leave Feedback — only for CONFIRMED tickets on ended events -->
+          <a [routerLink]="['/feedback', ticket.eventId]" class="btn btn-primary btn-sm"
+             *ngIf="ticket.status === 'CONFIRMED' && isEventEnded(ticket)">
+            <lucide-icon name="star" [size]="13"></lucide-icon>
+            Rate Event
+          </a>
+          <button class="btn btn-danger btn-sm"
+                  *ngIf="!isEventEnded(ticket)"
+                  (click)="cancel(ticket.ticketId)">
+            <lucide-icon name="x" [size]="13"></lucide-icon>
+            Cancel
+          </button>
+        </ng-container>
+        <span class="mt-inactive-label"
+              *ngIf="ticket.status === 'CANCELLED' || ticket.status === 'FAILED'">
+          {{ ticket.status === 'FAILED' ? 'Payment Failed' : 'Cancelled' }}
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+</div>

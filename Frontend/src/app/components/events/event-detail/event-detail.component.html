@@ -1,0 +1,216 @@
+<app-navbar></app-navbar>
+
+<div class="toast-container" *ngIf="toast">
+  <div class="toast" [ngClass]="'toast-' + toastType">{{ toast }}</div>
+</div>
+
+<!-- Loading -->
+<div class="page-wrapper" *ngIf="loading">
+  <div class="skeleton" style="height:300px;border-radius:16px;margin-bottom:24px"></div>
+  <div class="skeleton" style="height:200px;border-radius:16px"></div>
+</div>
+
+<!-- Event Detail -->
+<div class="page-wrapper" *ngIf="!loading && event">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/events">Events</a>
+    <span>/</span>
+    <span>{{ event.name }}</span>
+  </div>
+
+  <div class="detail-layout">
+
+    <!-- Main Content -->
+    <div class="detail-main">
+      <div class="event-hero">
+        <div class="hero-cat">
+          <span class="cat-icon">
+            <lucide-icon [name]="getCategoryIcon(event.category)" [size]="20"></lucide-icon>
+          </span>
+          <span class="chip chip-blue">{{ event.category }}</span>
+        </div>
+        <h1>{{ event.name }}</h1>
+        <div class="hero-meta">
+          <div class="meta-item">
+            <lucide-icon name="map-pin" [size]="16"></lucide-icon>
+            {{ event.location }}
+          </div>
+          <div class="meta-item">
+            <lucide-icon name="calendar-days" [size]="16"></lucide-icon>
+            <ng-container *ngIf="!event.endTime || (event.startTime | date:'yMMdd') === (event.endTime | date:'yMMdd'); else multiDay">
+              {{ event.startTime | date:'EEEE, MMMM d, y' }}
+            </ng-container>
+            <ng-template #multiDay>
+              {{ event.startTime | date:'EEE, MMM d, y' }} → {{ event.endTime | date:'EEE, MMM d, y' }}
+            </ng-template>
+          </div>
+          <div class="meta-item">
+            <lucide-icon name="clock" [size]="16"></lucide-icon>
+            {{ event.startTime | date:'h:mm a' }}<ng-container *ngIf="event.endTime"> – {{ event.endTime | date:'h:mm a' }}</ng-container>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:28px;margin-top:20px">
+        <h3 class="section-title">
+          <lucide-icon name="sparkles" [size]="16" class="inline-icon"></lucide-icon>
+          About this Event
+        </h3>
+        <p class="event-desc">{{ event.description }}</p>
+      </div>
+
+      <div class="card" style="padding:28px;margin-top:16px">
+        <h3 class="section-title">
+          <lucide-icon name="users" [size]="16" class="inline-icon"></lucide-icon>
+          Capacity
+        </h3>
+        <div class="capacity-bar-wrap">
+          <div class="capacity-labels">
+            <span>{{ event.totalCapacity - event.availableSeats }} booked</span>
+            <span>{{ event.availableSeats }} remaining</span>
+          </div>
+          <div class="capacity-bar">
+            <div class="capacity-fill"
+                 [style.width.%]="((event.totalCapacity - event.availableSeats) / event.totalCapacity) * 100"></div>
+          </div>
+          <p class="capacity-note">{{ event.totalCapacity }} total seats</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="detail-sidebar">
+      <div class="booking-card card">
+        <div class="price-display">
+          <span class="price-label">Ticket Price</span>
+          <span class="price-value">₹{{ event.ticketPrice }}</span>
+        </div>
+        <hr class="divider">
+        <div class="seat-info">
+          <div class="seat-row">
+            <span>
+              <lucide-icon name="users" [size]="13" class="inline-icon"></lucide-icon>
+              Available Seats
+            </span>
+            <strong [class.low-seats]="event.availableSeats < 10">{{ event.availableSeats }}</strong>
+          </div>
+          <div class="seat-row">
+            <span>
+              <lucide-icon name="circle-check" [size]="13" class="inline-icon"></lucide-icon>
+              Total Capacity
+            </span>
+            <strong>{{ event.totalCapacity }}</strong>
+          </div>
+        </div>
+        <hr class="divider">
+
+        <!-- Book Ticket — hidden once event has started -->
+        <button class="btn-book" (click)="openBooking()"
+                *ngIf="(auth.isAttendee() || auth.isAdmin()) && !isPastEvent()"
+                [disabled]="event.availableSeats === 0">
+          <lucide-icon name="ticket" [size]="18"></lucide-icon>
+          {{ event.availableSeats === 0 ? 'Sold Out' : 'Book Ticket' }}
+        </button>
+
+        <!-- Event ended label — shown instead of book button -->
+        <div class="event-ended-badge" *ngIf="(auth.isAttendee() || auth.isAdmin()) && isPastEvent()">
+          <lucide-icon name="clock" [size]="14"></lucide-icon>
+          This event has ended
+        </div>
+
+        <!-- Leave Feedback — only after the event has fully ended (endTime passed) -->
+        <a [routerLink]="['/feedback', event.eventId]"
+           class="btn btn-secondary"
+           style="width:100%;justify-content:center;margin-bottom:8px;display:flex;align-items:center;gap:6px;margin-top:8px"
+           *ngIf="(auth.isAttendee() || auth.isAdmin()) && isEventEnded()">
+          <lucide-icon name="star" [size]="15"></lucide-icon>
+          Leave Feedback
+        </a>
+        <p *ngIf="auth.isAttendee() && !isEventEnded()"
+           style="font-size:12px;color:var(--text-light);text-align:center;margin-top:4px;font-family:'Manrope',sans-serif">
+          Feedback opens after the event ends
+        </p>
+
+        <!-- Organizer/Admin Actions (only for event owner or admin) -->
+        <div class="organizer-actions" *ngIf="canEdit">
+          <a [routerLink]="['/events/edit', event.eventId]"
+             class="btn btn-secondary"
+             style="width:100%;margin-bottom:8px;justify-content:center;display:flex;align-items:center;gap:6px">
+            <lucide-icon name="pencil" [size]="15"></lucide-icon>
+            Edit Event
+          </a>
+          <button class="btn btn-danger"
+                  style="width:100%;justify-content:center;display:flex;align-items:center;gap:6px"
+                  (click)="deleteEvent()">
+            <lucide-icon name="trash-2" [size]="15"></lucide-icon>
+            Delete Event
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Book Ticket Modal -->
+<div class="modal-backdrop" *ngIf="bookingModal" (click)="closeBooking()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <lucide-icon name="ticket" [size]="18" class="inline-icon"></lucide-icon>
+        Confirm Booking
+      </h3>
+      <button class="modal-close" (click)="closeBooking()">
+        <lucide-icon name="x" [size]="18"></lucide-icon>
+      </button>
+    </div>
+    <div class="modal-body" *ngIf="event">
+      <div class="confirm-row">
+        <span>Event</span>
+        <strong>{{ event.name }}</strong>
+      </div>
+      <div class="confirm-row">
+        <span>Date</span>
+        <strong>{{ event.startTime | date:'MMM d, y' }}</strong>
+      </div>
+      <div class="confirm-row">
+        <span>Location</span>
+        <strong>{{ event.location }}</strong>
+      </div>
+      <!-- Quantity Selector -->
+      <div class="confirm-row">
+        <span>Quantity</span>
+        <div class="qty-control">
+          <button type="button" class="qty-btn"
+                  (click)="quantity = quantity > 1 ? quantity - 1 : 1"
+                  [disabled]="quantity <= 1">−</button>
+          <span class="qty-value">{{ quantity }}</span>
+          <button type="button" class="qty-btn"
+                  (click)="quantity = quantity < maxQuantity ? quantity + 1 : maxQuantity"
+                  [disabled]="quantity >= maxQuantity">+</button>
+        </div>
+      </div>
+      <div class="confirm-row total">
+        <span>Total Amount</span>
+        <strong>₹{{ totalAmount }}</strong>
+      </div>
+      <p class="modal-note" *ngIf="event.ticketPrice > 0">
+        <lucide-icon name="lock" [size]="13" class="inline-icon"></lucide-icon>
+        You'll be redirected to Stripe. After payment, you'll land on your <strong>My Tickets</strong> page.
+      </p>
+      <p class="modal-note" *ngIf="event.ticketPrice === 0">
+        <lucide-icon name="party-popper" [size]="13" class="inline-icon"></lucide-icon>
+        This is a free event — your ticket will be confirmed instantly!
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="closeBooking()">Cancel</button>
+        <button class="btn-book" (click)="confirmBooking()" [disabled]="booking" style="flex:1">
+          <span class="spinner" *ngIf="booking"></span>
+          {{ booking ? 'Processing...' : 'Confirm & Pay' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

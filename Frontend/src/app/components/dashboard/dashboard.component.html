@@ -1,0 +1,458 @@
+<app-navbar></app-navbar>
+
+<div class="page-wrapper">
+
+  <!-- ══════════════════════════════════════════════
+       TODAY'S EVENT REMINDER BANNER
+  ══════════════════════════════════════════════ -->
+  <div class="reminder-banner" *ngIf="todayEvents.length > 0 && !reminderDismissed">
+    <div class="reminder-inner">
+      <div class="reminder-icon">🎉</div>
+      <div class="reminder-text">
+        <strong *ngIf="auth.isAttendee()">
+          Hey {{ auth.getCurrentUser()?.fullName?.split(' ')?.[0] || 'there' }}!
+          You have {{ todayEvents.length }} event{{ todayEvents.length > 1 ? 's' : '' }} today —
+          don't forget to enjoy the moment!
+        </strong>
+        <strong *ngIf="auth.isOrganizer()">
+          Reminder: You are hosting
+          <em>{{ todayEvents[0].name }}</em>
+          {{ todayEvents.length > 1 ? 'and ' + (todayEvents.length - 1) + ' more event(s)' : '' }} today!
+          🚀
+        </strong>
+        <strong *ngIf="auth.isAdmin()">
+          {{ todayEvents.length }} event{{ todayEvents.length > 1 ? 's are' : ' is' }} happening today on EventSphere.
+        </strong>
+        <span class="reminder-events">
+          <ng-container *ngFor="let e of todayEvents; let i = index">
+            <a [routerLink]="['/events', e.eventId]">{{ e.name }}</a>
+            <span *ngIf="i < todayEvents.length - 1"> · </span>
+          </ng-container>
+          at {{ todayEvents[0].startTime | date:'h:mm a' }}
+        </span>
+      </div>
+      <button class="reminder-close" (click)="reminderDismissed = true">✕</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PENDING FEEDBACK REMINDERS (attendees only)
+  ══════════════════════════════════════════════ -->
+  <div class="feedback-reminders" *ngIf="auth.isAttendee() && pendingFeedbackEvents.length > 0">
+    <div class="fr-header">
+      <div class="fr-title">
+        <lucide-icon name="star" [size]="20"></lucide-icon>
+        <span>Pending Feedback</span>
+        <span class="fr-count">{{ pendingFeedbackEvents.length }}</span>
+      </div>
+      <p class="fr-sub">You attended these events — share your experience to help others!</p>
+    </div>
+    <div class="fr-cards">
+      <div class="fr-card" *ngFor="let e of pendingFeedbackEvents">
+        <div class="fr-card-icon">
+          <lucide-icon [name]="getCategoryIcon(e.category)" [size]="18"></lucide-icon>
+        </div>
+        <div class="fr-card-body">
+          <h4>{{ e.name }}</h4>
+          <p>
+            <lucide-icon name="calendar-days" [size]="12" class="inline-icon"></lucide-icon>
+            {{ e.startTime | date:'MMM d, y' }}
+          </p>
+        </div>
+        <a [routerLink]="['/feedback', e.eventId]" class="fr-card-cta">
+          <lucide-icon name="star" [size]="14"></lucide-icon>
+          Rate
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════ -->
+  <div class="dash-hero">
+    <div class="hero-photo-bg"></div>
+    <div class="px-orb px-orb-1" [style.transform]="'translateY(' + p1 + 'px)'"></div>
+    <div class="px-orb px-orb-2" [style.transform]="'translateY(' + p2 + 'px)'"></div>
+    <div class="px-orb px-orb-3" [style.transform]="'translateY(' + p3 + 'px)'"></div>
+    <div class="px-ring px-ring-1" [style.transform]="'translateY(' + p2 + 'px) rotate(30deg)'"></div>
+    <div class="px-ring px-ring-2" [style.transform]="'translateY(' + p1 + 'px) rotate(-20deg)'"></div>
+    <div class="px-ring px-ring-3" [style.transform]="'translateY(' + p3 + 'px) rotate(10deg)'"></div>
+    <div class="px-dot px-dot-1" [style.transform]="'translateY(' + p4 + 'px)'"></div>
+    <div class="px-dot px-dot-2" [style.transform]="'translateY(' + p3 + 'px)'"></div>
+    <div class="px-dot px-dot-3" [style.transform]="'translateY(' + p4 + 'px)'"></div>
+    <div class="px-dot px-dot-4" [style.transform]="'translateY(' + p2 + 'px)'"></div>
+    <div class="px-dot px-dot-5" [style.transform]="'translateY(' + p3 + 'px)'"></div>
+    <div class="hero-sweep"></div>
+
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>
+          <lucide-icon name="hand" [size]="30" class="greeting-icon"></lucide-icon>
+          {{ getGreeting() }},&nbsp;<span class="name-highlight">{{ auth.getCurrentUser()?.fullName?.split(' ')?.[0] || 'there' }}</span>
+        </h1>
+        <p>Welcome back to <strong>EventSphere</strong> — your premium hub for extraordinary experiences.
+          <lucide-icon name="sparkles" [size]="14" class="inline-icon"></lucide-icon>
+        </p>
+      </div>
+      <div class="role-pill" [ngClass]="rolePillClass">
+        <lucide-icon
+          [name]="auth.isAdmin() ? 'shield-check' : auth.isOrganizer() ? 'calendar-days' : 'ticket'"
+          [size]="15"></lucide-icon>
+        <span>{{ auth.isAdmin() ? 'Admin' : auth.isOrganizer() ? 'Organizer' : 'Attendee' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       STAT CARDS
+  ══════════════════════════════════════════════ -->
+  <div class="stats-grid">
+
+    <div class="stat-card stat-primary">
+      <div class="stat-icon-wrap"><lucide-icon name="calendar-days" [size]="22"></lucide-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ totalEvents }}</div>
+        <div class="stat-label"><lucide-icon name="calendar-days" [size]="12"></lucide-icon> Total Events</div>
+      </div>
+      <div class="stat-watermark"><lucide-icon name="calendar-days" [size]="64"></lucide-icon></div>
+    </div>
+
+    <div class="stat-card stat-accent" *ngIf="auth.isAttendee() || auth.isAdmin()">
+      <div class="stat-icon-wrap"><lucide-icon name="ticket" [size]="22"></lucide-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ myTickets }}</div>
+        <div class="stat-label"><lucide-icon name="ticket" [size]="12"></lucide-icon> My Tickets</div>
+      </div>
+      <div class="stat-watermark"><lucide-icon name="ticket" [size]="64"></lucide-icon></div>
+    </div>
+
+    <div class="stat-card stat-accent" *ngIf="auth.isOrganizer()">
+      <div class="stat-icon-wrap"><lucide-icon name="calendar-check" [size]="22"></lucide-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ myOrgEvents.length }}</div>
+        <div class="stat-label"><lucide-icon name="calendar-check" [size]="12"></lucide-icon> My Events</div>
+      </div>
+      <div class="stat-watermark"><lucide-icon name="calendar-check" [size]="64"></lucide-icon></div>
+    </div>
+
+    <div class="stat-card stat-green" *ngIf="auth.isAttendee()">
+      <div class="stat-icon-wrap"><lucide-icon name="circle-check" [size]="22"></lucide-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ myBookedEvents.length }}</div>
+        <div class="stat-label"><lucide-icon name="circle-check" [size]="12"></lucide-icon> Registered</div>
+      </div>
+      <div class="stat-watermark"><lucide-icon name="circle-check" [size]="64"></lucide-icon></div>
+    </div>
+
+    <div class="stat-card stat-green" *ngIf="auth.isAdmin()">
+      <div class="stat-icon-wrap"><lucide-icon name="circle-check" [size]="22"></lucide-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">Active</div>
+        <div class="stat-label"><lucide-icon name="circle-check" [size]="12"></lucide-icon> System Status</div>
+      </div>
+      <div class="stat-watermark"><lucide-icon name="circle-check" [size]="64"></lucide-icon></div>
+    </div>
+
+    <div class="stat-card stat-orange">
+      <div class="stat-icon-wrap"><lucide-icon name="clock" [size]="22"></lucide-icon></div>
+      <div class="stat-body">
+        <div class="stat-value">{{ pastEvents.length }}</div>
+        <div class="stat-label"><lucide-icon name="clock" [size]="12"></lucide-icon> Past Events</div>
+      </div>
+      <div class="stat-watermark"><lucide-icon name="clock" [size]="64"></lucide-icon></div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       QUICK ACTIONS
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <h2 class="section-title">
+      <lucide-icon name="zap" [size]="18" class="title-icon"></lucide-icon>
+      Quick Actions
+    </h2>
+    <div class="actions-grid">
+      <a routerLink="/events" class="action-card ac-browse">
+        <div class="action-icon-wrap"><lucide-icon name="search" [size]="22"></lucide-icon></div>
+        <span class="action-label">Browse Events</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+      <a routerLink="/tickets" class="action-card ac-tickets" *ngIf="auth.isAttendee() || auth.isAdmin()">
+        <div class="action-icon-wrap"><lucide-icon name="ticket" [size]="22"></lucide-icon></div>
+        <span class="action-label">My Tickets</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+      <a [routerLink]="['/events']" [queryParams]="{registered: 'true'}" class="action-card ac-tickets" *ngIf="auth.isAttendee()">
+        <div class="action-icon-wrap"><lucide-icon name="circle-check" [size]="22"></lucide-icon></div>
+        <span class="action-label">Registered Events</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+      <a [routerLink]="['/events']" [queryParams]="{past: 'true'}" class="action-card ac-pending" *ngIf="auth.isAttendee()">
+        <div class="action-icon-wrap"><lucide-icon name="history" [size]="22"></lucide-icon></div>
+        <span class="action-label">Past Events</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+      <a routerLink="/events/create" class="action-card ac-create" *ngIf="auth.isOrganizer() || auth.isAdmin()">
+        <div class="action-icon-wrap"><lucide-icon name="circle-plus" [size]="22"></lucide-icon></div>
+        <span class="action-label">Create Event</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+      <a [routerLink]="['/events']" [queryParams]="{past: 'true'}" class="action-card ac-pending" *ngIf="auth.isOrganizer()">
+        <div class="action-icon-wrap"><lucide-icon name="archive" [size]="22"></lucide-icon></div>
+        <span class="action-label">Completed Events</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+      <a routerLink="/admin/users" class="action-card ac-users" *ngIf="auth.isAdmin()">
+        <div class="action-icon-wrap"><lucide-icon name="users" [size]="22"></lucide-icon></div>
+        <span class="action-label">Manage Users</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+      <a routerLink="/admin/pending" class="action-card ac-pending" *ngIf="auth.isAdmin()">
+        <div class="action-icon-wrap"><lucide-icon name="hourglass" [size]="22"></lucide-icon></div>
+        <span class="action-label">Pending Approvals</span>
+        <lucide-icon name="arrow-right" [size]="14" class="ac-arrow"></lucide-icon>
+      </a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       MY REGISTERED EVENTS — ATTENDEE
+  ══════════════════════════════════════════════ -->
+  <div class="section" *ngIf="auth.isAttendee() && !loading">
+    <div class="section-head">
+      <h2 class="section-title">
+        <lucide-icon name="circle-check" [size]="18" class="title-icon"></lucide-icon>
+        My Registered Events
+      </h2>
+      <div style="display:flex;gap:10px">
+        <a [routerLink]="['/events']" [queryParams]="{registered: 'true'}" class="view-all-link">All Registered →</a>
+        <a routerLink="/tickets" class="view-all-link">My Tickets →</a>
+      </div>
+    </div>
+
+    <div class="events-grid" *ngIf="myBookedEvents.length > 0">
+      <div class="event-card" *ngFor="let event of myBookedEvents">
+        <div class="event-banner"
+             [style.background-image]="'url(' + getCategoryImage(event.category) + ')'">
+          <div class="event-banner-overlay"
+               [style.background]="'linear-gradient(135deg,' + getCategoryAccent(event.category) + '99, #0f0e1a99)'">
+          </div>
+          <div class="event-banner-top">
+            <span class="banner-category">
+              <lucide-icon [name]="getCategoryIcon(event.category)" [size]="13"></lucide-icon>
+              {{ event.category }}
+            </span>
+            <span class="banner-booked-badge">
+              <lucide-icon name="circle-check" [size]="12"></lucide-icon>
+              Registered
+            </span>
+          </div>
+        </div>
+        <div class="event-card-body">
+          <h3 class="event-card-name">{{ event.name }}</h3>
+          <div class="event-card-meta">
+            <span><lucide-icon name="map-pin" [size]="12"></lucide-icon> {{ event.location }}</span>
+            <span><lucide-icon name="calendar-days" [size]="12"></lucide-icon> {{ event.startTime | date:'MMM d, y' }}</span>
+            <span><lucide-icon name="clock" [size]="12"></lucide-icon> {{ event.startTime | date:'h:mm a' }}</span>
+          </div>
+          <div class="event-card-footer">
+            <span class="event-price">₹{{ event.ticketPrice }}</span>
+            <a [routerLink]="['/events', event.eventId]" class="btn btn-primary btn-sm">View →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-card" *ngIf="myBookedEvents.length === 0">
+      <lucide-icon name="ticket" [size]="40"></lucide-icon>
+      <p>You haven't registered for any events yet.</p>
+      <a routerLink="/events" class="btn btn-primary btn-sm" style="margin-top:8px">Browse Events</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       MY EVENTS — ORGANIZER
+  ══════════════════════════════════════════════ -->
+  <div class="section" *ngIf="auth.isOrganizer() && !loading">
+    <div class="section-head">
+      <h2 class="section-title">
+        <lucide-icon name="calendar-days" [size]="18" class="title-icon"></lucide-icon>
+        My Upcoming Events
+      </h2>
+      <a routerLink="/events" class="view-all-link">View All →</a>
+    </div>
+
+    <div class="events-grid" *ngIf="upcomingEvents.length > 0">
+      <div class="event-card" *ngFor="let event of upcomingEvents.slice(0,6)">
+        <div class="event-banner"
+             [style.background-image]="'url(' + getCategoryImage(event.category) + ')'">
+          <div class="event-banner-overlay"
+               [style.background]="'linear-gradient(135deg,' + getCategoryAccent(event.category) + '99, #0f0e1a99)'">
+          </div>
+          <div class="event-banner-top">
+            <span class="banner-category">
+              <lucide-icon [name]="getCategoryIcon(event.category)" [size]="13"></lucide-icon>
+              {{ event.category }}
+            </span>
+            <span class="banner-seats" [class.low]="event.availableSeats < 10">
+              {{ event.availableSeats }} seats
+            </span>
+          </div>
+        </div>
+        <div class="event-card-body">
+          <h3 class="event-card-name">{{ event.name }}</h3>
+          <div class="event-card-meta">
+            <span><lucide-icon name="map-pin" [size]="12"></lucide-icon> {{ event.location }}</span>
+            <span><lucide-icon name="calendar-days" [size]="12"></lucide-icon> {{ event.startTime | date:'MMM d, y' }}</span>
+            <span><lucide-icon name="clock" [size]="12"></lucide-icon> {{ event.startTime | date:'h:mm a' }}</span>
+          </div>
+          <div class="event-card-footer">
+            <span class="event-price">₹{{ event.ticketPrice }}</span>
+            <div style="display:flex;gap:6px">
+              <a [routerLink]="['/events/edit', event.eventId]" class="btn btn-secondary btn-sm">Edit</a>
+              <a [routerLink]="['/events', event.eventId]" class="btn btn-primary btn-sm">View →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-card" *ngIf="upcomingEvents.length === 0">
+      <lucide-icon name="calendar-off" [size]="40"></lucide-icon>
+      <p>No upcoming events. Create one!</p>
+      <a routerLink="/events/create" class="btn btn-primary btn-sm" style="margin-top:8px">Create Event</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       UPCOMING EVENTS — ADMIN / ATTENDEE
+  ══════════════════════════════════════════════ -->
+  <div class="section" *ngIf="(auth.isAdmin() || auth.isAttendee()) && !loading">
+    <div class="section-head">
+      <h2 class="section-title">
+        <lucide-icon name="calendar-days" [size]="18" class="title-icon"></lucide-icon>
+        Upcoming Events
+      </h2>
+      <a routerLink="/events" class="view-all-link">View All →</a>
+    </div>
+
+    <div class="events-grid" *ngIf="upcomingEvents.length > 0">
+      <div class="event-card" *ngFor="let event of upcomingEvents">
+        <div class="event-banner"
+             [style.background-image]="'url(' + getCategoryImage(event.category) + ')'">
+          <div class="event-banner-overlay"
+               [style.background]="'linear-gradient(135deg,' + getCategoryAccent(event.category) + '99, #0f0e1a99)'">
+          </div>
+          <div class="event-banner-top">
+            <span class="banner-category">
+              <lucide-icon [name]="getCategoryIcon(event.category)" [size]="13"></lucide-icon>
+              {{ event.category }}
+            </span>
+            <span class="banner-seats" [class.low]="event.availableSeats < 10">
+              {{ event.availableSeats }} seats
+            </span>
+          </div>
+        </div>
+        <div class="event-card-body">
+          <h3 class="event-card-name">{{ event.name }}</h3>
+          <div class="event-card-meta">
+            <span><lucide-icon name="map-pin" [size]="12"></lucide-icon> {{ event.location }}</span>
+            <span><lucide-icon name="calendar-days" [size]="12"></lucide-icon> {{ event.startTime | date:'MMM d, y' }}</span>
+            <span><lucide-icon name="clock" [size]="12"></lucide-icon> {{ event.startTime | date:'h:mm a' }}</span>
+          </div>
+          <div class="event-card-footer">
+            <span class="event-price">₹{{ event.ticketPrice }}</span>
+            <a [routerLink]="['/events', event.eventId]" class="btn btn-primary btn-sm">View →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-card" *ngIf="upcomingEvents.length === 0">
+      <lucide-icon name="calendar-off" [size]="48"></lucide-icon>
+      <p>No upcoming events right now.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAST / COMPLETED EVENTS — ALL ROLES
+  ══════════════════════════════════════════════ -->
+  <div class="section" *ngIf="!loading && pastEvents.length > 0">
+    <div class="section-head">
+      <h2 class="section-title section-title-past">
+        <lucide-icon name="history" [size]="18" class="title-icon"></lucide-icon>
+        {{ auth.isAttendee() ? 'Events I Attended' : 'Completed Events' }}
+      </h2>
+      <a [routerLink]="['/events']" [queryParams]="{past: 'true'}" class="view-all-link">
+        View All Past →
+      </a>
+    </div>
+
+    <div class="events-grid past-grid">
+      <div class="event-card past-event-card" *ngFor="let event of pastEvents">
+        <div class="event-banner event-banner-past"
+             [style.background-image]="'url(' + getCategoryImage(event.category) + ')'">
+          <div class="event-banner-overlay" style="background:rgba(10,8,30,0.65)"></div>
+          <div class="event-banner-top">
+            <span class="banner-category">
+              <lucide-icon [name]="getCategoryIcon(event.category)" [size]="13"></lucide-icon>
+              {{ event.category }}
+            </span>
+            <span class="past-badge">
+              <lucide-icon name="check-circle-2" [size]="12"></lucide-icon>
+              Completed
+            </span>
+          </div>
+        </div>
+        <div class="event-card-body">
+          <h3 class="event-card-name past-name">{{ event.name }}</h3>
+          <div class="event-card-meta">
+            <span><lucide-icon name="map-pin" [size]="12"></lucide-icon> {{ event.location }}</span>
+            <span><lucide-icon name="calendar-days" [size]="12"></lucide-icon> {{ event.startTime | date:'MMM d, y' }}</span>
+          </div>
+          <div class="event-card-footer">
+            <span class="event-price-past">₹{{ event.ticketPrice }}</span>
+            <div style="display:flex;gap:6px">
+              <a [routerLink]="['/feedback', event.eventId]" class="btn btn-primary btn-sm"
+                 *ngIf="auth.isAttendee()">Rate →</a>
+              <a [routerLink]="['/events', event.eventId]" class="btn btn-secondary btn-sm">Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       EXPLORE CATEGORIES
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-head">
+      <h2 class="section-title">
+        <lucide-icon name="globe" [size]="18" class="title-icon"></lucide-icon>
+        Explore Categories
+      </h2>
+      <a routerLink="/events" class="view-all-link">Browse All →</a>
+    </div>
+    <div class="categories-grid">
+      <a class="cat-card" *ngFor="let cat of categories"
+         [routerLink]="['/events']" [queryParams]="{category: cat.value}">
+        <div class="cat-bg" [style.background-image]="'url(' + cat.image + ')'"></div>
+        <div class="cat-overlay"></div>
+        <div class="cat-bar" [style.background]="cat.accent"></div>
+        <div class="cat-glow" [style.background]="cat.accent + '44'"></div>
+        <div class="cat-body">
+          <div class="cat-icon-wrap"
+               [style.border-color]="cat.accent + '66'"
+               [style.background]="cat.accent + '28'">
+            <lucide-icon [name]="cat.icon" [size]="20" [style.color]="cat.accent"></lucide-icon>
+          </div>
+          <span class="cat-name">{{ cat.label }}</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>

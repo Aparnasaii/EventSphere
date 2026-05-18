@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="sg" cx="38%" cy="35%" r="62%">
+      <stop offset="0%"   stop-color="#a5b4fc"/>
+      <stop offset="40%"  stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </radialGradient>
+    <radialGradient id="sh" cx="35%" cy="28%" r="40%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gl" cx="50%" cy="50%" r="50%">
+      <stop offset="60%"  stop-color="#4338ca" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.4"/>
+    </radialGradient>
+    <filter id="ds">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1e1b4b" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Glow halo -->
+  <circle cx="32" cy="32" r="31" fill="url(#gl)"/>
+
+  <!-- Sphere -->
+  <circle cx="32" cy="32" r="28" fill="url(#sg)" filter="url(#ds)"/>
+
+  <!-- Equator -->
+  <ellipse cx="32" cy="32" rx="28" ry="8"
+           fill="none" stroke="#818cf8" stroke-width="1.2" opacity="0.55"/>
+
+  <!-- Meridian -->
+  <ellipse cx="32" cy="32" rx="9" ry="28"
+           fill="none" stroke="#a5b4fc" stroke-width="1" opacity="0.4"/>
+
+  <!-- Diagonal orbit -->
+  <path d="M 10 14 Q 32 26 54 50"
+        fill="none" stroke="#c7d2fe" stroke-width="0.9" opacity="0.3" stroke-dasharray="3 2"/>
+
+  <!-- Event dots -->
+  <circle cx="32" cy="8"  r="2.5" fill="#e0e7ff" opacity="0.95"/>
+  <circle cx="50" cy="22" r="2"   fill="#a5b4fc" opacity="0.9"/>
+  <circle cx="18" cy="28" r="1.8" fill="#c7d2fe" opacity="0.8"/>
+  <circle cx="42" cy="46" r="2.2" fill="#818cf8" opacity="0.95"/>
+  <circle cx="22" cy="48" r="1.6" fill="#a5b4fc" opacity="0.75"/>
+
+  <!-- Connection lines -->
+  <line x1="32" y1="8"  x2="50" y2="22" stroke="#c7d2fe" stroke-width="0.7" opacity="0.45"/>
+  <line x1="50" y1="22" x2="42" y2="46" stroke="#c7d2fe" stroke-width="0.7" opacity="0.45"/>
+  <line x1="32" y1="8"  x2="18" y2="28" stroke="#c7d2fe" stroke-width="0.7" opacity="0.4"/>
+  <line x1="18" y1="28" x2="22" y2="48" stroke="#c7d2fe" stroke-width="0.7" opacity="0.4"/>
+  <line x1="22" y1="48" x2="42" y2="46" stroke="#c7d2fe" stroke-width="0.7" opacity="0.35"/>
+
+  <!-- Shine -->
+  <circle cx="32" cy="32" r="28" fill="url(#sh)"/>
+
+  <!-- Rim -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#c7d2fe" stroke-width="0.8" opacity="0.3"/>
+</svg>

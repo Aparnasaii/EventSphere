@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340">
+  <defs>
+    <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#011142"/>
+      <stop offset="50%"  stop-color="#011C6B"/>
+      <stop offset="100%" stop-color="#3778C2"/>
+    </linearGradient>
+    <radialGradient id="tg2" cx="70%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#01258F" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#011142" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="340" fill="url(#tg)"/>
+  <rect width="600" height="340" fill="url(#tg2)"/>
+
+  <ellipse cx="500" cy="60"  rx="320" ry="190" fill="rgba(1,37,143,0.25)"  transform="rotate(-12 500 60)"/>
+  <ellipse cx="100" cy="280" rx="260" ry="150" fill="rgba(55,120,194,0.18)" transform="rotate(8 100 280)"/>
+
+  <!-- Circuit lines -->
+  <line x1="60"  y1="140" x2="200" y2="140" stroke="rgba(75,159,225,0.45)" stroke-width="1.5"/>
+  <line x1="200" y1="140" x2="200" y2="100" stroke="rgba(75,159,225,0.45)" stroke-width="1.5"/>
+  <line x1="200" y1="100" x2="320" y2="100" stroke="rgba(75,159,225,0.45)" stroke-width="1.5"/>
+  <line x1="320" y1="100" x2="320" y2="180" stroke="rgba(75,159,225,0.45)" stroke-width="1.5"/>
+  <line x1="320" y1="180" x2="460" y2="180" stroke="rgba(75,159,225,0.45)" stroke-width="1.5"/>
+  <line x1="460" y1="180" x2="460" y2="240" stroke="rgba(75,159,225,0.45)" stroke-width="1.5"/>
+  <line x1="460" y1="240" x2="540" y2="240" stroke="rgba(75,159,225,0.45)" stroke-width="1.5"/>
+
+  <line x1="80"  y1="220" x2="180" y2="220" stroke="rgba(55,120,194,0.4)" stroke-width="1.5"/>
+  <line x1="180" y1="220" x2="180" y2="280" stroke="rgba(55,120,194,0.4)" stroke-width="1.5"/>
+  <line x1="180" y1="280" x2="380" y2="280" stroke="rgba(55,120,194,0.4)" stroke-width="1.5"/>
+  <line x1="380" y1="280" x2="380" y2="200" stroke="rgba(55,120,194,0.4)" stroke-width="1.5"/>
+  <line x1="380" y1="200" x2="540" y2="200" stroke="rgba(55,120,194,0.4)" stroke-width="1.5"/>
+
+  <circle cx="200" cy="140" r="5" fill="#4B9FE1" opacity="0.85"/>
+  <circle cx="320" cy="100" r="5" fill="#4B9FE1" opacity="0.85"/>
+  <circle cx="460" cy="180" r="5" fill="#4B9FE1" opacity="0.85"/>
+  <circle cx="180" cy="280" r="4" fill="#3778C2" opacity="0.75"/>
+  <circle cx="380" cy="200" r="4" fill="#3778C2" opacity="0.75"/>
+
+  <rect x="120" y="118" width="50" height="44" rx="5" fill="rgba(1,37,143,0.65)" stroke="rgba(75,159,225,0.5)" stroke-width="1.5"/>
+  <rect x="270" y="78"  width="50" height="44" rx="5" fill="rgba(1,37,143,0.65)" stroke="rgba(75,159,225,0.5)" stroke-width="1.5"/>
+  <rect x="400" y="158" width="50" height="44" rx="5" fill="rgba(1,37,143,0.65)" stroke="rgba(75,159,225,0.5)" stroke-width="1.5"/>
+
+  <circle cx="52"  cy="48"  r="3" fill="rgba(255,255,255,0.38)"/>
+  <circle cx="430" cy="42"  r="3.5" fill="rgba(75,159,225,0.55)"/>
+  <circle cx="560" cy="285" r="3" fill="rgba(55,120,194,0.5)"/>
+
+  <text x="300" y="52" font-family="Georgia,serif" font-size="20" font-weight="800" fill="rgba(255,255,255,0.92)" text-anchor="middle" letter-spacing="2">TECHNOLOGY</text>
+  <line x1="180" y1="62" x2="420" y2="62" stroke="rgba(75,159,225,0.55)" stroke-width="1.5"/>
+</svg>

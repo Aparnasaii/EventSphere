@@ -1,0 +1,157 @@
+<app-navbar></app-navbar>
+
+<div class="toast-container" *ngIf="toast">
+  <div class="toast" [ngClass]="'toast-' + toastType">{{ toast }}</div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/events">Events</a>
+    <span>/</span>
+    <span>{{ isEdit ? 'Edit Event' : 'Create Event' }}</span>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <h1>{{ isEdit ? '✏️ Edit Event' : '➕ Create New Event' }}</h1>
+      <p>{{ isEdit ? 'Update the event details below' : 'Fill in the details to create a new event' }}</p>
+    </div>
+  </div>
+
+  <!-- Skeleton while fetching -->
+  <div *ngIf="fetching">
+    <div class="skeleton" style="height:60px;border-radius:12px;margin-bottom:16px"></div>
+    <div class="skeleton" style="height:120px;border-radius:12px;margin-bottom:16px"></div>
+    <div class="skeleton" style="height:60px;border-radius:12px;margin-bottom:16px"></div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-card card" *ngIf="!fetching">
+
+    <div class="form-grid">
+
+      <!-- Event Name -->
+      <div class="form-group full-width">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Event Name
+        </label>
+        <input type="text" formControlName="name" class="form-control"
+               placeholder="e.g. TechConf 2025"
+               [class.is-invalid]="f['name'].touched && f['name'].invalid">
+        <div class="invalid-feedback" *ngIf="f['name'].touched && f['name'].errors?.['required']">Event name is required</div>
+        <div class="invalid-feedback" *ngIf="f['name'].touched && f['name'].errors?.['minlength']">Minimum 3 characters</div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group full-width">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Description
+        </label>
+        <textarea formControlName="description" class="form-control" rows="4"
+                  placeholder="Describe your event in detail..."
+                  [class.is-invalid]="f['description'].touched && f['description'].invalid"></textarea>
+        <div class="invalid-feedback" *ngIf="f['description'].touched && f['description'].errors?.['required']">Description is required</div>
+        <div class="invalid-feedback" *ngIf="f['description'].touched && f['description'].errors?.['minlength']">Minimum 10 characters</div>
+      </div>
+
+      <!-- Location -->
+      <div class="form-group">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Location
+        </label>
+        <input type="text" formControlName="location" class="form-control"
+               placeholder="e.g. Mumbai, India"
+               [class.is-invalid]="f['location'].touched && f['location'].invalid">
+        <div class="invalid-feedback" *ngIf="f['location'].touched && f['location'].errors?.['required']">Location is required</div>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Category
+        </label>
+        <select formControlName="category" class="form-control">
+          <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+
+      <!-- Start Date -->
+      <div class="form-group">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Start Date & Time
+        </label>
+        <input type="datetime-local" formControlName="startTime" class="form-control"
+               [min]="minDateTime"
+               [class.is-invalid]="f['startTime'].touched && f['startTime'].invalid">
+        <div class="invalid-feedback" *ngIf="f['startTime'].touched && f['startTime'].errors?.['required']">Start date/time is required</div>
+        <div class="invalid-feedback" *ngIf="f['startTime'].touched && f['startTime'].errors?.['pastDate']">
+          Start time cannot be in the past
+        </div>
+      </div>
+
+      <!-- End Date -->
+      <div class="form-group">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          End Date & Time
+        </label>
+        <input type="datetime-local" formControlName="endTime" class="form-control"
+               [min]="f['startTime'].value || minDateTime"
+               [class.is-invalid]="(f['endTime'].touched && f['endTime'].invalid) || (f['endTime'].touched && (form.errors?.['endBeforeStart'] || form.errors?.['tooShort']))">
+        <div class="invalid-feedback" *ngIf="f['endTime'].touched && f['endTime'].errors?.['required']">End date/time is required</div>
+        <div class="invalid-feedback" *ngIf="f['endTime'].touched && form.errors?.['endBeforeStart']">
+          End time must be after start time
+        </div>
+        <div class="invalid-feedback" *ngIf="f['endTime'].touched && form.errors?.['tooShort']">
+          Event must be at least 1 hour long
+        </div>
+        <small style="display:block;margin-top:6px;font-size:12px;color:var(--text-light);font-family:'Manrope',sans-serif">
+          Minimum event duration: 1 hour
+        </small>
+      </div>
+
+      <!-- Total Capacity -->
+      <div class="form-group">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Total Capacity
+        </label>
+        <input type="number" formControlName="totalCapacity" class="form-control"
+               placeholder="e.g. 500" min="1"
+               [class.is-invalid]="f['totalCapacity'].touched && f['totalCapacity'].invalid">
+        <div class="invalid-feedback" *ngIf="f['totalCapacity'].touched && f['totalCapacity'].errors?.['min']">Minimum 1 seat required</div>
+      </div>
+
+      <!-- Ticket Price -->
+      <div class="form-group">
+        <label class="form-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Ticket Price (₹)
+        </label>
+        <input type="number" formControlName="ticketPrice" class="form-control"
+               placeholder="0 for free" min="0"
+               [class.is-invalid]="f['ticketPrice'].touched && f['ticketPrice'].invalid">
+        <div class="invalid-feedback" *ngIf="f['ticketPrice'].touched && f['ticketPrice'].errors?.['min']">Price cannot be negative</div>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <a routerLink="/events" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        <span class="spinner" *ngIf="loading"></span>
+        {{ loading ? 'Saving...' : (isEdit ? 'Update Event' : 'Create Event') }}
+      </button>
+    </div>
+
+  </form>
+
+</div>

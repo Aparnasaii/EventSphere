@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340">
+  <defs>
+    <linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#011142"/>
+      <stop offset="50%"  stop-color="#011C6B"/>
+      <stop offset="100%" stop-color="#3778C2"/>
+    </linearGradient>
+    <radialGradient id="ag2" cx="60%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#01258F" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#011142" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="340" fill="url(#ag)"/>
+  <rect width="600" height="340" fill="url(#ag2)"/>
+
+  <ellipse cx="510" cy="60"  rx="300" ry="180" fill="rgba(1,37,143,0.25)"  transform="rotate(-13 510 60)"/>
+  <ellipse cx="90"  cy="280" rx="260" ry="150" fill="rgba(55,120,194,0.18)" transform="rotate(8 90 280)"/>
+
+  <!-- Palette -->
+  <ellipse cx="290" cy="185" rx="120" ry="105" fill="rgba(1,17,66,0.55)" stroke="rgba(75,159,225,0.45)" stroke-width="2"/>
+  <ellipse cx="230" cy="148" rx="28" ry="22" fill="url(#ag)" stroke="rgba(75,159,225,0.4)" stroke-width="1.5"/>
+
+  <!-- Paint blobs -->
+  <circle cx="250" cy="180" r="14" fill="rgba(75,159,225,0.8)"  stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <circle cx="300" cy="155" r="12" fill="rgba(55,120,194,0.85)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <circle cx="345" cy="175" r="13" fill="rgba(1,37,143,0.9)"   stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <circle cx="335" cy="215" r="12" fill="rgba(1,28,107,0.88)"  stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <circle cx="280" cy="220" r="11" fill="rgba(75,159,225,0.65)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+
+  <!-- Brush -->
+  <line x1="390" y1="100" x2="490" y2="60" stroke="rgba(255,255,255,0.5)" stroke-width="6" stroke-linecap="round"/>
+  <line x1="390" y1="100" x2="490" y2="60" stroke="rgba(75,159,225,0.8)" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="385" cy="105" rx="10" ry="6" fill="#4B9FE1" transform="rotate(-25 385 105)"/>
+
+  <line x1="120" y1="240" x2="60" y2="290" stroke="rgba(255,255,255,0.35)" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="125" cy="236" rx="8" ry="5" fill="#3778C2" transform="rotate(40 125 236)"/>
+
+  <circle cx="55"  cy="45"  r="3"   fill="rgba(255,255,255,0.38)"/>
+  <circle cx="430" cy="38"  r="3.5" fill="rgba(75,159,225,0.55)"/>
+  <circle cx="545" cy="275" r="3"   fill="rgba(55,120,194,0.5)"/>
+
+  <text x="300" y="52" font-family="Georgia,serif" font-size="22" font-weight="800" fill="rgba(255,255,255,0.92)" text-anchor="middle" letter-spacing="2">ART</text>
+  <line x1="240" y1="62" x2="360" y2="62" stroke="rgba(75,159,225,0.55)" stroke-width="1.5"/>
+</svg>

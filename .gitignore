@@ -1,0 +1,65 @@
+# ─────────── Secrets / Env ───────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+application-local.properties
+application-local.yml
+application-secrets.properties
+
+# ─────────── Java / Maven ───────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.log
+hs_err_pid*
+
+# ─────────── IDEs ────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.sts4-cache/
+
+# ─────────── Node / Angular ──────────
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
+*.tsbuildinfo
+.nyc_output/
+coverage/
+.eslintcache
+
+# ─────────── OS ──────────────────────
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ─────────── Logs / DB dumps ─────────
+logs/
+*.sql.bak
+*.dump
+*.sqlite
+*.db
+*.log
+
+# ─────────── Build artifacts ─────────
+build/
+*.tgz
+
+# ─────────── Misc ────────────────────
+.history/
+.cache/

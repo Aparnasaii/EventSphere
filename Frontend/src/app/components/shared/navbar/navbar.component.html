@@ -1,0 +1,147 @@
+<!-- Backdrop: visible on mobile only (CSS hides it on desktop) -->
+<div class="nb-backdrop" *ngIf="sidebarOpen" (click)="toggleSidebar()"></div>
+
+<nav class="navbar" [class.collapsed]="!sidebarOpen" [class.sidebar-open]="sidebarOpen">
+
+  <!-- ── Brand — click to slide sidebar in/out ─── -->
+  <div class="nb-brand" (click)="toggleSidebar()" title="Toggle sidebar">
+    <div class="nb-brand-logo">
+      <img src="/assets/eventsphere-icon.svg" alt="EventSphere" width="22" height="22"
+           style="display:block;border-radius:4px;">
+    </div>
+    <div class="nb-brand-text">
+      <span class="nb-brand-name">Event<span class="nb-brand-accent">Sphere</span></span>
+      <span class="nb-brand-sub">Elevate Every Experience</span>
+    </div>
+    <lucide-icon name="chevron-left" [size]="14" class="nb-collapse-icon"></lucide-icon>
+  </div>
+
+  <!-- ── Nav Groups ─────────────────────────────── -->
+  <div class="nb-scroll">
+
+    <!-- MAIN group — all roles -->
+    <div class="nb-group">
+      <span class="nb-group-label">Main</span>
+
+      <a routerLink="/dashboard" routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact:true}" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="layout-dashboard" [size]="17"></lucide-icon></div>
+        <span>Dashboard</span>
+      </a>
+
+      <a routerLink="/events" routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact:true}" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="calendar-days" [size]="17"></lucide-icon></div>
+        <span>{{ auth.isOrganizer() ? 'My Events' : 'All Events' }}</span>
+      </a>
+
+      <!-- Past Events — all roles -->
+      <a [routerLink]="['/events']" [queryParams]="{past: 'true'}"
+         routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="history" [size]="17"></lucide-icon></div>
+        <span>Past Events</span>
+      </a>
+    </div>
+
+    <!-- ATTENDEE group -->
+    <div class="nb-group" *ngIf="auth.isAttendee()">
+      <span class="nb-group-label">My Account</span>
+
+      <a routerLink="/tickets" routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="ticket" [size]="17"></lucide-icon></div>
+        <span>My Tickets</span>
+      </a>
+
+      <a [routerLink]="['/events']" [queryParams]="{registered: 'true'}"
+         routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="circle-check" [size]="17"></lucide-icon></div>
+        <span>Registered Events</span>
+      </a>
+    </div>
+
+    <!-- ORGANIZER group -->
+    <div class="nb-group" *ngIf="auth.isOrganizer()">
+      <span class="nb-group-label">Organizer</span>
+
+      <a routerLink="/events/create" routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="circle-plus" [size]="17"></lucide-icon></div>
+        <span>Create Event</span>
+      </a>
+
+      <a [routerLink]="['/events']" [queryParams]="{view: 'all'}"
+         routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="layout-grid" [size]="17"></lucide-icon></div>
+        <span>All Events</span>
+      </a>
+
+      <a [routerLink]="['/events']" [queryParams]="{past: 'true'}"
+         routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="archive" [size]="17"></lucide-icon></div>
+        <span>Completed Events</span>
+      </a>
+    </div>
+
+    <!-- ADMIN group -->
+    <div class="nb-group" *ngIf="auth.isAdmin()">
+      <span class="nb-group-label">Admin</span>
+
+      <a routerLink="/events/create" routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="circle-plus" [size]="17"></lucide-icon></div>
+        <span>Create Event</span>
+      </a>
+
+      <a routerLink="/admin/users" routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="users" [size]="17"></lucide-icon></div>
+        <span>Manage Users</span>
+      </a>
+
+      <a routerLink="/admin/pending" routerLinkActive="active" (click)="closeMobileMenu()">
+        <div class="nb-icon"><lucide-icon name="clock-4" [size]="17"></lucide-icon></div>
+        <span>Pending Approvals</span>
+        <span class="nb-badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ── Footer: theme + user ───────────────────── -->
+  <div class="nb-footer">
+
+    <button class="nb-theme-btn" (click)="toggleTheme()" [title]="isDark ? 'Light Mode' : 'Dark Mode'">
+      <lucide-icon [name]="isDark ? 'sun' : 'moon'" [size]="16"></lucide-icon>
+      <span>{{ isDark ? 'Light Mode' : 'Dark Mode' }}</span>
+    </button>
+
+    <div class="nb-user" (click)="userMenuOpen = !userMenuOpen" (clickOutside)="userMenuOpen = false">
+      <div class="nb-avatar">{{ currentUser?.email?.[0]?.toUpperCase() || 'U' }}</div>
+      <div class="nb-user-info">
+        <span class="nb-user-name">{{ currentUser?.fullName || currentUser?.email }}</span>
+        <span class="nb-user-role" [ngClass]="'role-' + getRoleClass()">{{ getRoleBadge() }}</span>
+      </div>
+      <lucide-icon name="chevron-down" [size]="13" class="nb-chevron" [class.open]="userMenuOpen"></lucide-icon>
+
+      <!-- Dropdown pops UP -->
+      <div class="nb-dropdown" *ngIf="userMenuOpen">
+        <div class="nb-dropdown-head">
+          <div class="nb-dh-avatar">{{ currentUser?.email?.[0]?.toUpperCase() || 'U' }}</div>
+          <div>
+            <div class="nb-dh-name">{{ currentUser?.fullName || 'User' }}</div>
+            <div class="nb-dh-email">{{ currentUser?.email }}</div>
+          </div>
+        </div>
+        <hr class="nb-divider">
+        <button class="nb-dropdown-item logout" (click)="logout()">
+          <lucide-icon name="log-out" [size]="15"></lucide-icon>
+          Sign Out
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</nav>
+
+<!-- ── Hamburger ── -->
+<button class="nb-hamburger" (click)="toggleSidebar()" [class.open]="sidebarOpen">
+  <lucide-icon [name]="sidebarOpen ? 'x' : 'menu'" [size]="20"></lucide-icon>
+</button>

@@ -1,0 +1,80 @@
+<app-navbar></app-navbar>
+<div class="page-wrapper">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <h1>
+        <lucide-icon name="hourglass" [size]="26" class="inline-icon"></lucide-icon>
+        Pending Approvals
+      </h1>
+      <p>
+        <lucide-icon name="users" [size]="14" class="inline-icon"></lucide-icon>
+        Review and approve organizer registration requests
+      </p>
+    </div>
+    <div class="count-chip" *ngIf="!loading">
+      <lucide-icon name="clock-4" [size]="14"></lucide-icon>
+      {{ users.length }} pending
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" *ngIf="toast">
+    <div class="toast" [ngClass]="'toast-' + toastType">
+      <lucide-icon [name]="toastType === 'success' ? 'circle-check' : toastType === 'error' ? 'circle-x' : 'info'" [size]="16"></lucide-icon>
+      {{ toast }}
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  <div class="loading-grid" *ngIf="loading">
+    <div class="skeleton" style="height:100px;border-radius:12px" *ngFor="let i of [1,2,3]"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && users.length === 0">
+    <div class="empty-icon">
+      <lucide-icon name="badge-check" [size]="56"></lucide-icon>
+    </div>
+    <h3>All Clear!</h3>
+    <p>No pending organizer requests at the moment.</p>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards-grid" *ngIf="!loading && users.length > 0">
+    <div class="pending-card" *ngFor="let user of users">
+      <div class="card-left">
+        <div class="user-avatar">{{ user.fullName[0] }}</div>
+        <div class="user-info">
+          <h3>{{ user.fullName }}</h3>
+          <p>
+            <lucide-icon name="mail" [size]="12" class="inline-icon"></lucide-icon>
+            {{ user.email }}
+          </p>
+          <p class="phone">
+            <lucide-icon name="phone-call" [size]="12" class="inline-icon"></lucide-icon>
+            {{ user.contactNumber }}
+          </p>
+        </div>
+      </div>
+      <div class="card-right">
+        <span class="chip chip-orange">
+          <lucide-icon name="hourglass" [size]="12"></lucide-icon>
+          PENDING
+        </span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-success" (click)="approve(user.userId)">
+            <lucide-icon name="check" [size]="15"></lucide-icon>
+            Approve
+          </button>
+          <button class="btn btn-danger" (click)="reject(user.userId)">
+            <lucide-icon name="x" [size]="15"></lucide-icon>
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

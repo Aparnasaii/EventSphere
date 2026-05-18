@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="340" viewBox="0 0 600 340">
+  <defs>
+    <linearGradient id="mg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#011142"/>
+      <stop offset="50%"  stop-color="#011C6B"/>
+      <stop offset="100%" stop-color="#01258F"/>
+    </linearGradient>
+    <radialGradient id="mg2" cx="60%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#3778C2" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#011142" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="340" fill="url(#mg)"/>
+  <rect width="600" height="340" fill="url(#mg2)"/>
+
+  <ellipse cx="520" cy="60"  rx="340" ry="200" fill="rgba(1,37,143,0.25)"  transform="rotate(-15 520 60)"/>
+  <ellipse cx="80"  cy="280" rx="280" ry="160" fill="rgba(55,120,194,0.18)" transform="rotate(10 80 280)"/>
+
+  <!-- Equalizer bars -->
+  <rect x="80"  y="240" width="28" height="60"  rx="5" fill="rgba(75,159,225,0.65)"/>
+  <rect x="120" y="190" width="28" height="110" rx="5" fill="rgba(75,159,225,0.8)"/>
+  <rect x="160" y="210" width="28" height="90"  rx="5" fill="rgba(75,159,225,0.72)"/>
+  <rect x="200" y="160" width="28" height="140" rx="5" fill="#4B9FE1"/>
+  <rect x="240" y="200" width="28" height="100" rx="5" fill="rgba(75,159,225,0.78)"/>
+  <rect x="280" y="220" width="28" height="80"  rx="5" fill="rgba(75,159,225,0.68)"/>
+  <rect x="320" y="175" width="28" height="125" rx="5" fill="#4B9FE1"/>
+  <rect x="360" y="205" width="28" height="95"  rx="5" fill="rgba(75,159,225,0.72)"/>
+  <rect x="400" y="230" width="28" height="70"  rx="5" fill="rgba(75,159,225,0.62)"/>
+  <rect x="440" y="185" width="28" height="115" rx="5" fill="rgba(75,159,225,0.78)"/>
+
+  <circle cx="55"  cy="42"  r="3" fill="rgba(255,255,255,0.38)"/>
+  <circle cx="180" cy="28"  r="2" fill="rgba(255,255,255,0.25)"/>
+  <circle cx="390" cy="40"  r="4" fill="rgba(75,159,225,0.6)"/>
+  <circle cx="555" cy="130" r="2" fill="rgba(255,255,255,0.3)"/>
+  <circle cx="540" cy="270" r="3" fill="rgba(55,120,194,0.5)"/>
+
+  <text x="300" y="52" font-family="Georgia,serif" font-size="22" font-weight="800" fill="rgba(255,255,255,0.92)" text-anchor="middle" letter-spacing="1">MUSIC</text>
+  <line x1="210" y1="62" x2="390" y2="62" stroke="rgba(75,159,225,0.55)" stroke-width="1.5"/>
+</svg>

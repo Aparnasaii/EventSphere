@@ -1,0 +1,401 @@
+@charset "UTF-8";
+/* ═══════════════════════════════════════════════════
+   EVENT DETAIL  —  Manrope / Fraunces redesign
+═══════════════════════════════════════════════════ */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Manrope", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-light);
+  margin-bottom: 24px;
+  animation: fadeIn 0.3s ease;
+}
+.breadcrumb a {
+  color: var(--secondary);
+  font-weight: 600;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+  animation: fadeIn 0.4s ease 0.05s both;
+}
+
+/* ── Event Hero Card ──────────────────────────────── */
+.event-hero {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  /* Top gradient bar */
+}
+.event-hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand-dark), var(--brand-mid), var(--secondary));
+  border-radius: 20px 20px 0 0;
+}
+.event-hero h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 16px 0 4px;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.hero-cat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: "Manrope", sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-mid);
+}
+.meta-item lucide-icon {
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+
+/* ── Sub-sections inside hero ─────────────────────── */
+.section-title {
+  font-family: "Manrope", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.event-desc {
+  font-family: "Manrope", sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  color: var(--text-mid);
+  line-height: 1.75;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── Capacity Bar ─────────────────────────────────── */
+.capacity-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Manrope", sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.capacity-bar {
+  height: 8px;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.capacity-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-mid), var(--secondary));
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.capacity-note {
+  font-family: "Manrope", sans-serif;
+  font-size: 12.5px;
+  color: var(--text-light);
+  margin-top: 7px;
+}
+
+/* ── Booking Card (Sidebar) ───────────────────────── */
+.booking-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  position: sticky;
+  top: 84px;
+  box-shadow: var(--shadow-sm);
+}
+
+.price-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.price-label {
+  font-family: "Manrope", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.price-value {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--brand-mid);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.seat-info {
+  margin: 16px 0;
+}
+
+.seat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: "Manrope", sans-serif;
+  font-size: 13.5px;
+}
+.seat-row:last-child {
+  border-bottom: none;
+}
+.seat-row span {
+  color: var(--text-light);
+  font-weight: 500;
+}
+.seat-row strong {
+  color: var(--text-dark);
+  font-weight: 700;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+}
+.seat-row .low-seats {
+  color: var(--danger);
+}
+
+.btn-book {
+  width: 100%;
+  padding: 14px;
+  background: var(--grad-mid);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: "Manrope", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: var(--transition);
+  margin-bottom: 10px;
+  box-shadow: 0 4px 15px rgba(49, 46, 129, 0.25);
+}
+.btn-book:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.btn-book:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.event-ended-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: rgba(100, 116, 139, 0.1);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.btn-feedback {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+}
+.btn-feedback:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.btn-feedback:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.organizer-actions {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Modal ────────────────────────────────────────── */
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-family: "Manrope", sans-serif;
+  font-size: 14px;
+}
+.confirm-row span {
+  color: var(--text-light);
+  font-weight: 500;
+}
+.confirm-row strong {
+  color: var(--text-dark);
+  font-weight: 700;
+  max-width: 60%;
+  text-align: right;
+}
+.confirm-row.total {
+  margin-top: 8px;
+  border-bottom: none;
+}
+.confirm-row.total span {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-size: 15px;
+}
+.confirm-row.total strong {
+  font-family: "Fraunces", serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--brand-mid);
+}
+
+/* Quantity control */
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: visible;
+  background: var(--bg-card);
+}
+
+.qty-btn {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: none;
+  background: var(--bg-soft);
+  color: var(--text-dark);
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, color 0.18s;
+}
+.qty-btn:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.qty-btn:last-child {
+  border-radius: 0 8px 8px 0;
+}
+.qty-btn:hover:not(:disabled) {
+  background: var(--secondary);
+  color: #fff;
+}
+.qty-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.qty-value {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dark) !important; /* override .confirm-row span rule */
+  min-width: 42px;
+  text-align: center;
+  padding: 0 4px;
+  user-select: none;
+}
+
+.modal-note {
+  font-family: "Manrope", sans-serif;
+  font-size: 13px;
+  color: var(--text-light);
+  margin: 16px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 900px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+  .booking-card {
+    position: static;
+  }
+  .event-hero h1 {
+    font-size: 22px;
+  }
+}
