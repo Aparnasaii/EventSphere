@@ -1,7 +1,7 @@
 # EventSphere — Event Management Platform
 
 A full-stack microservices application for discovering, booking, and managing events.
-Built with Spring Boot (Java 21), Angular 17, MySQL, Stripe, and Eureka service discovery.
+Built with Spring Boot (Java 17), Angular 16, MySQL, Stripe, and Eureka service discovery.
 
 ---
 
@@ -118,7 +118,7 @@ Internship Project/
 
 ## Prerequisites
 
-- Java 21+
+- Java 17+
 - Node.js 18+ and npm
 - Maven 3.9+
 - MySQL 8 running on `localhost:3306`
