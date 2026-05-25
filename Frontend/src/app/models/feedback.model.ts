@@ -4,9 +4,9 @@ export interface Feedback {
   eventId:     number;
   rating:      number;
   comment:     string;
-  submittedAt: string;   // backend field — was incorrectly 'createdAt'
-  status?:     string;   // e.g. 'PENDING' | 'APPROVED'
-  eventName?:  string;   // joined from event service (not stored in entity)
+  submittedAt: string;   
+  status?:     string;   
+  eventName?:  string;   
 }
 
 export interface FeedbackRequest {

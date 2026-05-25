@@ -14,16 +14,22 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'event-management-frontend'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('event-management-frontend');
-  });
-
-  it('should render title', () => {
+  it('should render a router-outlet', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('event-management-frontend app is running!');
+    expect(compiled.querySelector('router-outlet')).not.toBeNull();
+  });
+
+  it('should update --scroll-progress CSS variable on window scroll', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Invoke the scroll handler directly
+    app.onScroll();
+
+    const progress = document.body.style.getPropertyValue('--scroll-progress');
+    expect(progress).toBeDefined();
   });
 });

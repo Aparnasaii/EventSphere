@@ -14,7 +14,7 @@ import { catchError }       from 'rxjs/operators';
 })
 export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  // â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
   events:   Event[] = [];
   filtered: Event[] = [];
   loading   = true;
@@ -30,8 +30,6 @@ export class EventListComponent implements OnInit, AfterViewInit, OnDestroy {
   allEventsMode  = false;   // ?view=all         (organizer: browse all events)
 
   private routeSub!: Subscription;
-
-  // â”€â”€ Infinite Scroll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   visibleCount  = 9;
   batchSize     = 6;
   loadingMore   = false;
