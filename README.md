@@ -5,7 +5,7 @@ Built with Spring Boot (Java 17), Angular 16, MySQL, Stripe, and Eureka service 
 
 ---
 
-## Features
+## Features.
 
 ### For Attendees
 - Browse upcoming events with category, location, and date filters
