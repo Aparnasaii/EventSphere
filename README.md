@@ -99,7 +99,7 @@ Internship Project/
 │   ├── feedback-service/    (port 8086 — ratings & reviews)
 │   └── notification-service/(port 8085 — email templates + sending)
 │
-├── Frontend/                (Angular 17 SPA — port 4200)
+├── Frontend/                (Angular 16 SPA — port 4200)
 │   ├── src/app/components/
 │   │   ├── auth/            (login, register, password reset)
 │   │   ├── dashboard/
