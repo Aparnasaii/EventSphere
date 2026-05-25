@@ -290,11 +290,3 @@ The admin user is auto-created on first run of `user-service`. Change `ADMIN_PAS
 ## License
 
 MIT — feel free to fork, study, and adapt.
-
----
-
-## Author
-
-Built as an internship project. Contributions and feedback welcome.
-
-Repository: https://github.com/aparna-cts781/EventSphere
